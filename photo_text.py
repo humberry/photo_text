@@ -73,7 +73,7 @@ class PhotoText(scene.Scene):
 		self.add_layer(self.layer)
 		
 	def touch_moved(self,touch):
-		if (touch.location[0] > 0 and touch.location[0] < 1024) and (touch.location[1] > self.btn_height and touch.location[1] < 748):
+		if (0 < touch.location[0] < 1024) and (self.btn_height < touch.location[1] < 748):
 			self.position = touch.location
 
 	def touch_ended(self,touch):
