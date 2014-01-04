@@ -77,32 +77,32 @@ class PhotoText(scene.Scene):
 			self.position = touch.location
 
 	def touch_ended(self,touch):
-		if (touch.location[0] > 0 and touch.location[0] < 1024) and (touch.location[1] > self.btn_height and touch.location[1] < 748):
+		if (0 < touch.location[0] < 1024) and (self.btn_height < touch.location[1] < 748):
 			self.position = touch.location
-		elif (touch.location[0] > 0 and touch.location[0] < self.btn_sm_width) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (0 < touch.location[0] < self.btn_sm_width) and (0 < touch.location[1] < self.btn_height):
 			if self.fontsize >= 2 and self.fontsize < 16:
 				self.fontsize += 1.0
 			elif self.fontsize >= 16:
 				self.fontsize += 16.0
-		elif (touch.location[0] > self.btn_sm_width and touch.location[0] < self.btn_sm_width*2) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (self.btn_sm_width < touch.location[0] < self.btn_sm_width*2) and (0 < touch.location[1] < self.btn_height):
 			if self.fontsize > 3 and self.fontsize <= 16:
 				self.fontsize -= 1.0
 			elif self.fontsize > 16:
 				self.fontsize -= 16.0
-		elif (touch.location[0] > self.btn_sm_width*2 and touch.location[0] < self.btn_sm_width*3) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (self.btn_sm_width*2 < touch.location[0] < self.btn_sm_width*3) and (0 < touch.location[1] < self.btn_height):
 			if self.fontnr < 9:
 				self.fontnr += 1
 			else:
 				self.fontnr = 0
-		elif (touch.location[0] > self.btn_sm_width*3 and touch.location[0] < self.btn_sm_width*4) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (self.btn_sm_width*3 < touch.location[0] < self.btn_sm_width*4) and (0 < touch.location[1] < self.btn_height):
 			if self.colornr < 6:
 				self.colornr += 1
 			else:
 				self.colornr = 0	
-		elif (touch.location[0] > self.btn_sm_width*4 and touch.location[0] < self.btn_sm_width*4+self.btn_lg_width) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (self.btn_sm_width*4 < touch.location[0] < self.btn_sm_width*4+self.btn_lg_width) and (0 < touch.location[1] < self.btn_height):
 			font = fonttypes[self.fontnr]
 			pic_save(self.img, self.picsize[0], self.picsize[1], self.text, font, self.fontsize, self.colornr, self.position[0]*self.picscale, (self.position[1]-self.btn_height)*self.picscale, self.picscale)
-		elif (touch.location[0] > self.btn_sm_width*4+self.btn_lg_width and touch.location[0] < self.btn_sm_width*4+self.btn_lg_width*2) and (touch.location[1] > 0 and touch.location[1] < self.btn_height):
+		elif (self.btn_sm_width*4+self.btn_lg_width < touch.location[0] < self.btn_sm_width*4+self.btn_lg_width*2) and (0 < touch.location[1] < self.btn_height):
 			sys.exit()	
 														
 	def draw(self):
