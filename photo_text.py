@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from  __future__ import print_function
 import collections
 import photos
@@ -40,7 +41,7 @@ def pic_save(image, width, height, text, font, fontsize, color, x, y, scale):
 
 class TextButton(scene.Layer):
     def __init__(self, inScene, inLoc, inText, inFgColor, inBgColor):
-        (theImage, theSize) = scene.render_text(inText, font_size=64)
+        (theImage, theSize) = scene.render_text(inText, font_size=48)
         super(self.__class__, self).__init__(scene.Rect(inLoc[0], inLoc[1], *theSize))
         inScene.add_layer(self)
         self.parent = inScene
@@ -100,30 +101,35 @@ class PhotoText(scene.Scene):
 
     def setup(self):
         self.button_dict = collections.OrderedDict([
-                           (' +  ',      self.increase_font_size),# Is it possible to center the + char, but with the same button size of the - button?
-                           ('  -  ',      self.decrease_font_size),
-                           (' Font ',   self.next_font),
-                           (' Color ',  self.next_color),
-                           (' Save ',   self.save_image),
+                           ('+',      self.increase_font_size),
+                           ('—',      self.decrease_font_size),  # This is —, not -
+                           ('Font',   self.next_font),
+                           ('Color',  self.next_color),
+                           ('Save',   self.save_image),
                            ('Cancel', self.cancel) ])
 
         fgColor = scene.Color(*color('black'))  #what does the * in front of color mean?
         bgColor = scene.Color(*color('grey'))
         loc = [0, 0]
         for button_text in self.button_dict:
+            if button_text == '+':
+                button_text = '  +  '  # double spaces around '+'
+            else:                      # single space around others
+                button_text = ' ' + button_text + ' '
             theButton = TextButton(self, loc, button_text, fgColor, bgColor)
             self.btn_height = max(self.btn_height, theButton.frame.h)
             loc[0] += theButton.frame.w + 4  # 4 pixels between each button
 
         self.picratio = self.picsize.w / (self.picsize.h * 1.0)
-        x = 668 * self.picratio  # where does  668 come from? 768 (max. height) - 80 (btn. height) - 20 (watch+battery line) = 668
-        if x <= 1024:            # where does 1024 come from? 1024 (max. width)
-            y = 668
-            self.picborder = scene.Rect(x, self.btn_height, 1024, y)
+        usable_space = self.bounds.w - self.btn_height - 20
+        x = usable_space * self.picratio
+        if x <= self.bounds.w:
+            y = usable_space
+            self.picborder = scene.Rect(x, self.btn_height, self.bounds.w, y)
         else:
-            x = 1024
-            y = 1024 / self.picratio
-            self.picborder = scene.Rect(0, y+self.btn_height, x, 668-y)
+            x = self.bounds.w
+            y = self.bounds.w / self.picratio
+            self.picborder = scene.Rect(0, y+self.btn_height, x, usable_space-y)
         self.position = scene.Size(x/2, y/2+self.btn_height)
         self.picscale = self.picsize[0] / (x * 1.0)
         self.layer = scene.Layer(scene.Rect(0, self.btn_height, x, y))
@@ -140,9 +146,9 @@ class PhotoText(scene.Scene):
     def current_font(self):
         return fonttypes[self.fontnr % len(fonttypes)]
 
-    def touch_moved(self, touch):  # where does  748 come from? 768 (max. height) - 20 (watch+battery line) = 748
-        if ((0 < touch.location[0] < 1024)
-        and (self.btn_height < touch.location[1] < 748)):
+    def touch_moved(self, touch):
+        if ((0 < touch.location[0] < self.bounds.w)
+        and (self.btn_height < touch.location[1] < self.bounds.h - 20)):
             self.position = touch.location
 
     def touch_ended(self, touch):
@@ -156,7 +162,7 @@ class PhotoText(scene.Scene):
         scene.text(self.text, self.current_font(), self.fontsize,
                    self.position[0], self.position[1], 5)
         scene.fill(*color('white'))   # watch+battery -> white background
-        scene.rect(0, 748, 1024, 20)  # watch+battery
+        scene.rect(0, self.bounds.h - 20, self.bounds.w, 20)  # watch+battery
 
 if photos.get_count():
     PhotoText()
