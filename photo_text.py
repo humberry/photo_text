@@ -27,7 +27,7 @@ def pic_save(image, width, height, text, font, fontsize, color, x, y, scale):
     background = Image.new('RGBA', (width,height), 'white')
     background.paste(image, (0, 0))
     draw = ImageDraw.Draw(background)
-    offset = fontsize / 3.2  # offset is relative to the fontsize
+    offset = fontsize / 3.2  # offset has to be fixed!!!
     fontsize *= scale
     y = height - y
     f = ImageFont.truetype(font, int(fontsize))
@@ -100,14 +100,14 @@ class PhotoText(scene.Scene):
 
     def setup(self):
         self.button_dict = collections.OrderedDict([
-                           ('+',      self.increase_font_size),
-                           ('-',      self.decrease_font_size),
-                           ('Font',   self.next_font),
-                           ('Color',  self.next_color),
-                           ('Save',   self.save_image),
+                           (' +  ',      self.increase_font_size),# Is it possible to center the + char, but with the same button size of the - button?
+                           ('  -  ',      self.decrease_font_size),
+                           (' Font ',   self.next_font),
+                           (' Color ',  self.next_color),
+                           (' Save ',   self.save_image),
                            ('Cancel', self.cancel) ])
 
-        fgColor = scene.Color(*color('blue'))
+        fgColor = scene.Color(*color('black'))  #what does the * in front of color mean?
         bgColor = scene.Color(*color('grey'))
         loc = [0, 0]
         for button_text in self.button_dict:
@@ -116,8 +116,8 @@ class PhotoText(scene.Scene):
             loc[0] += theButton.frame.w + 4  # 4 pixels between each button
 
         self.picratio = self.picsize.w / (self.picsize.h * 1.0)
-        x = 668 * self.picratio  # where does  668 come from?  should it be a constant?
-        if x <= 1024:            # where does 1024 come from?  should it be a constant?
+        x = 668 * self.picratio  # where does  668 come from? 768 (max. height) - 80 (btn. height) - 20 (watch+battery line) = 668
+        if x <= 1024:            # where does 1024 come from? 1024 (max. width)
             y = 668
             self.picborder = scene.Rect(x, self.btn_height, 1024, y)
         else:
@@ -140,7 +140,7 @@ class PhotoText(scene.Scene):
     def current_font(self):
         return fonttypes[self.fontnr % len(fonttypes)]
 
-    def touch_moved(self, touch):  # where does  748 come from?  should it be a constant?
+    def touch_moved(self, touch):  # where does  748 come from? 768 (max. height) - 20 (watch+battery line) = 748
         if ((0 < touch.location[0] < 1024)
         and (self.btn_height < touch.location[1] < 748)):
             self.position = touch.location
@@ -149,6 +149,7 @@ class PhotoText(scene.Scene):
         self.touch_moved(touch)
 
     def draw(self):
+        #Without a black background/frames the text is flickering outside of the picture!
         self.root_layer.update(self.dt)
         self.root_layer.draw()
         scene.tint(*self.current_color())  # draw the user's text
