@@ -52,7 +52,7 @@ class TextButton(scene.Layer):
         self.background = inBgColor
 
     def touch_began(self, touch):
-        self.parent.button_pressed(self.text)
+        self.parent.button_pressed(self.text.strip())
 
 class PhotoText(scene.Scene):
     def __init__(self):
@@ -101,8 +101,8 @@ class PhotoText(scene.Scene):
 
     def setup(self):
         self.button_dict = collections.OrderedDict([
-                           ('  +  ',      self.increase_font_size),
-                           (' — ',      self.decrease_font_size),  # This is —, not -
+                           ('+',      self.increase_font_size),
+                           ('—',      self.decrease_font_size),  # This is —, not -
                            ('Font',   self.next_font),
                            ('Color',  self.next_color),
                            ('Save',   self.save_image),
@@ -113,10 +113,10 @@ class PhotoText(scene.Scene):
         loc = [0, 0]
         for button_text in self.button_dict:
             # ??? KeyError: '  +  ', ' \xe2\x80\x94 ', ' Font ', ... ??? when button_pressed() is called
-            #if button_text == '+':
-            #    button_text = '  +  '  # double spaces around '+'
-            #else:                      # single space around others
-            #    button_text = ' ' + button_text + ' '
+            if button_text == '+':
+                button_text = '  +  '  # double spaces around '+'
+            else:                      # single space around others
+                button_text = ' ' + button_text + ' '
             theButton = TextButton(self, loc, button_text, fgColor, bgColor)
             self.btn_height = max(self.btn_height, theButton.frame.h)
             loc[0] += theButton.frame.w + 4  # 4 pixels between each button
