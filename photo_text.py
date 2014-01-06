@@ -28,7 +28,7 @@ def pic_save(image, width, height, text, font, fontsize, color, x, y, scale):
     background = Image.new('RGBA', (width,height), 'white')
     background.paste(image, (0, 0))
     draw = ImageDraw.Draw(background)
-    offset = fontsize / 3.2  # offset has to be fixed!!!
+    offset = fontsize / 3.2  # offset has to be fixed!
     fontsize *= scale
     y = height - y
     f = ImageFont.truetype(font, int(fontsize))
@@ -101,27 +101,28 @@ class PhotoText(scene.Scene):
 
     def setup(self):
         self.button_dict = collections.OrderedDict([
-                           ('+',      self.increase_font_size),
-                           ('—',      self.decrease_font_size),  # This is —, not -
+                           ('  +  ',      self.increase_font_size),
+                           (' — ',      self.decrease_font_size),  # This is —, not -
                            ('Font',   self.next_font),
                            ('Color',  self.next_color),
                            ('Save',   self.save_image),
                            ('Cancel', self.cancel) ])
 
-        fgColor = scene.Color(*color('black'))  #what does the * in front of color mean?
+        fgColor = scene.Color(*color('black'))
         bgColor = scene.Color(*color('grey'))
         loc = [0, 0]
         for button_text in self.button_dict:
-            if button_text == '+':
-                button_text = '  +  '  # double spaces around '+'
-            else:                      # single space around others
-                button_text = ' ' + button_text + ' '
+            # ??? KeyError: '  +  ', ' \xe2\x80\x94 ', ' Font ', ... ??? when button_pressed() is called
+            #if button_text == '+':
+            #    button_text = '  +  '  # double spaces around '+'
+            #else:                      # single space around others
+            #    button_text = ' ' + button_text + ' '
             theButton = TextButton(self, loc, button_text, fgColor, bgColor)
             self.btn_height = max(self.btn_height, theButton.frame.h)
             loc[0] += theButton.frame.w + 4  # 4 pixels between each button
 
         self.picratio = self.picsize.w / (self.picsize.h * 1.0)
-        usable_space = self.bounds.w - self.btn_height - 20
+        usable_space = self.bounds.h - self.btn_height     # -20 not necessary bounds.h = 748
         x = usable_space * self.picratio
         if x <= self.bounds.w:
             y = usable_space
@@ -162,7 +163,7 @@ class PhotoText(scene.Scene):
         scene.text(self.text, self.current_font(), self.fontsize,
                    self.position[0], self.position[1], 5)
         scene.fill(*color('white'))   # watch+battery -> white background
-        scene.rect(0, self.bounds.h - 20, self.bounds.w, 20)  # watch+battery
+        scene.rect(0, self.bounds.h, self.bounds.w, 20)  # watch+battery  -20 not necessary bounds.h = 748
 
 if photos.get_count():
     PhotoText()
