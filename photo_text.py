@@ -45,14 +45,14 @@ class TextButton(scene.Layer):
         super(self.__class__, self).__init__(scene.Rect(inLoc[0], inLoc[1], *theSize))
         inScene.add_layer(self)
         self.parent = inScene
-        self.text   = inText
+        self.text   = inText.strip()
         self.image  = theImage
         self.stroke = inFgColor  # border color
         self.stroke_weight = 2   # border width
         self.background = inBgColor
 
     def touch_began(self, touch):
-        self.parent.button_pressed(self.text.strip())
+        self.parent.button_pressed(self.text)
 
 class PhotoText(scene.Scene):
     def __init__(self):
@@ -156,7 +156,7 @@ class PhotoText(scene.Scene):
         self.touch_moved(touch)
 
     def draw(self):
-        #Without a black background/frames the text is flickering outside of the picture!
+        scene.background(0, 0, 0)
         self.root_layer.update(self.dt)
         self.root_layer.draw()
         scene.tint(*self.current_color())  # draw the user's text
