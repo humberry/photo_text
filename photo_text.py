@@ -112,7 +112,6 @@ class PhotoText(scene.Scene):
         bgColor = scene.Color(*color('grey'))
         loc = [0, 0]
         for button_text in self.button_dict:
-            # ??? KeyError: '  +  ', ' \xe2\x80\x94 ', ' Font ', ... ??? when button_pressed() is called
             if button_text == '+':
                 button_text = '  +  '  # double spaces around '+'
             else:                      # single space around others
@@ -122,7 +121,7 @@ class PhotoText(scene.Scene):
             loc[0] += theButton.frame.w + 4  # 4 pixels between each button
 
         self.picratio = self.picsize.w / (self.picsize.h * 1.0)
-        usable_space = self.bounds.h - self.btn_height     # -20 not necessary bounds.h = 748
+        usable_space = self.bounds.h - self.btn_height
         x = usable_space * self.picratio
         if x <= self.bounds.w:
             y = usable_space
@@ -156,14 +155,14 @@ class PhotoText(scene.Scene):
         self.touch_moved(touch)
 
     def draw(self):
-        scene.background(0, 0, 0)
+        scene.background(*color('black'))
         self.root_layer.update(self.dt)
         self.root_layer.draw()
         scene.tint(*self.current_color())  # draw the user's text
         scene.text(self.text, self.current_font(), self.fontsize,
                    self.position[0], self.position[1], 5)
         scene.fill(*color('white'))   # watch+battery -> white background
-        scene.rect(0, self.bounds.h, self.bounds.w, 20)  # watch+battery  -20 not necessary bounds.h = 748
+        scene.rect(0, self.bounds.h, self.bounds.w, 20)  # watch+battery
 
 if photos.get_count():
     PhotoText()
