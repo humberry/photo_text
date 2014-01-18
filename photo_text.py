@@ -149,6 +149,7 @@ class PhotoText(scene.Scene):
         if ((0 < touch.location[0] < self.bounds.w)
         and (self.btn_height < touch.location[1] < self.bounds.h - 20)):
             self.position = touch.location
+            self.position[1] -= self.btn_height
 
     def touch_ended(self, touch):
         self.touch_moved(touch)
