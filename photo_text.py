@@ -28,13 +28,12 @@ def pic_save(image, width, height, text, font, fontsize, color, x, y, scale):
     background = Image.new('RGBA', (width,height), 'white')
     background.paste(image, (0, 0))
     draw = ImageDraw.Draw(background)
-    offset = fontsize / 3.2  # offset has to be fixed!
     fontsize *= scale
     y = height - y
     f = ImageFont.truetype(font, int(fontsize))
     textsize = draw.textsize(text, font=f)
     x -= textsize[0]/2
-    y -= (textsize[1]/2) + offset
+    y -= ((textsize[1]/1.15)/2) # remove offset / add div factor 1.15 (difference between pixel size and font size)
     draw.text((x, y), text, font=f, fill=color)
     clipboard.set_image(background, format='jpeg', jpeg_quality=0.98)
     photos.save_image(clipboard.get_image())
@@ -69,7 +68,7 @@ class PhotoText(scene.Scene):
         self.picborder = None
         self.btn_height = 0
         if self.img:
-            scene.run(self)
+            scene.run(self, frame_interval=3)   # save battery with less frame rates -> 3 = 20fps
         else:
             print('Good bye!')
 
@@ -93,7 +92,7 @@ class PhotoText(scene.Scene):
 
     def save_image(self):
         color = tuple([int(i * 255) for i in self.current_color()])  # covert scene color to PIL color
-        pic_save(self.img, self.picsize[0], self.picsize[1], self.text, self.current_font(), self.fontsize, color, self.position[0]*self.picscale, (self.position[1]-self.btn_height)*self.picscale, self.picscale)
+        pic_save(self.img, self.picsize[0], self.picsize[1], self.text, self.current_font(), self.fontsize, color, self.position[0]*self.picscale, self.position[1]*self.picscale, self.picscale)   # no ...position[1]-self.btn_height)
         sys.exit()
 
     def cancel(self):
@@ -102,7 +101,7 @@ class PhotoText(scene.Scene):
     def setup(self):
         self.button_dict = collections.OrderedDict([
                            ('+',      self.increase_font_size),
-                           ('—',      self.decrease_font_size),  # This is —, not -
+                           ('—',      self.decrease_font_size),
                            ('Font',   self.next_font),
                            ('Color',  self.next_color),
                            ('Save',   self.save_image),
@@ -130,7 +129,7 @@ class PhotoText(scene.Scene):
             x = self.bounds.w
             y = self.bounds.w / self.picratio
             self.picborder = scene.Rect(0, y+self.btn_height, x, usable_space-y)
-        self.position = scene.Size(x/2, y/2+self.btn_height)
+        self.position = scene.Size(x/2, y/2)    # no ...y/2+self.btn_height
         self.picscale = self.picsize[0] / (x * 1.0)
         self.layer = scene.Layer(scene.Rect(0, self.btn_height, x, y))
         self.layer.image = scene.load_pil_image(self.img)
@@ -160,7 +159,7 @@ class PhotoText(scene.Scene):
         self.root_layer.draw()
         scene.tint(*self.current_color())  # draw the user's text
         scene.text(self.text, self.current_font(), self.fontsize,
-                   self.position[0], self.position[1], 5)
+                   self.position[0], self.position[1]+self.btn_height, 5)   # add ...position[1]+self.btn_height
         scene.fill(*color('white'))   # watch+battery -> white background
         scene.rect(0, self.bounds.h, self.bounds.w, 20)  # watch+battery
 
