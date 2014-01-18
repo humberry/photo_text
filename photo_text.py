@@ -65,7 +65,6 @@ class PhotoText(scene.Scene):
         if self.picsize.h > self.picsize.w:
             print('Sorry at the moment only landscape or square pictures are supported!')
             self.img = None
-        self.picborder = None
         self.btn_height = 0
         if self.img:
             scene.run(self, frame_interval=3)   # save battery with less frame rates -> 3 = 20fps
@@ -124,11 +123,9 @@ class PhotoText(scene.Scene):
         x = usable_space * self.picratio
         if x <= self.bounds.w:
             y = usable_space
-            self.picborder = scene.Rect(x, self.btn_height, self.bounds.w, y)
         else:
             x = self.bounds.w
             y = self.bounds.w / self.picratio
-            self.picborder = scene.Rect(0, y+self.btn_height, x, usable_space-y)
         self.position = scene.Size(x/2, y/2)    # no ...y/2+self.btn_height
         self.picscale = self.picsize[0] / (x * 1.0)
         self.layer = scene.Layer(scene.Rect(0, self.btn_height, x, y))
