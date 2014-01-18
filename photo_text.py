@@ -62,9 +62,6 @@ class PhotoText(scene.Scene):
         self.fontsize = 48.0  # 48 point
         self.img = photos.pick_image()
         self.picsize = scene.Size(*self.img.size)
-        if self.picsize.h > self.picsize.w:
-            print('Sorry at the moment only landscape or square pictures are supported!')
-            self.img = None
         self.btn_height = 0
         if self.img:
             scene.run(self, frame_interval=3)   # save battery with less frame rates -> 3 = 20fps
