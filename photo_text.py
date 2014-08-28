@@ -60,7 +60,8 @@ class PhotoText(scene.Scene):
         self.fontnr = 0       # Helvetica
         self.colornr = 3      # red
         self.fontsize = 48.0  # 48 point
-        self.img = photos.pick_image()
+        self.img2 = photos.pick_image()
+        self.img = self.img2.convert('RGBA') #fix for current scene.load_pil_image()
         self.picsize = scene.Size(*self.img.size)
         self.btn_height = 0
         if self.img:
