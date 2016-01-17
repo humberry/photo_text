@@ -8,3 +8,9 @@ Pythonista script to add one line of text to a photo from the camera roll.
 3. Select a font, font size and text color
 4. Position the text (touch the picture and the text will follow)
 5. Save the picture to the camera roll or cancel
+
+
+PhotoTextV2
+===========
+
+Similar to the first version, but now with ui. Not finished yet. Some images can't be displayed.
