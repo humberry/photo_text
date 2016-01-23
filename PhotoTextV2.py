@@ -16,12 +16,13 @@ def color(color_name):
 def color_by_number(color_number):
     return colors_dict[colors_dict.keys()[color_number % len(colors_dict)]]
 
-def pic_save(image, width, height, text, font, fontsize, color, x, y):
+def pic_save(image, width, height, text, font, fontsize, color, x, y, scale):
     background = Image.new('RGBA', (width,height), 'white')
     background.paste(image, (0, 0))
     draw = ImageDraw.Draw(background)
-    y = height - y
-    f = ImageFont.truetype(font, int(fontsize))
+    y = height - (y * scale)
+    x = x * scale
+    f = ImageFont.truetype(font, int(fontsize * scale))
     textsize = draw.textsize(text, font=f)
     x -= textsize[0]/2
     y -= ((textsize[1]/1.15)/2) # remove offset / add div factor 1.15 (difference between pixel size and font size)
@@ -32,11 +33,12 @@ def pic_save(image, width, height, text, font, fontsize, color, x, y):
 class MyPicture(scene.Scene):
     def __init__(self, text, img, picsize):
         self.text = text
-        self.position = [0, 0]
+        self.textPosition = [0, 0]
         self.fontnr = 0       # Helvetica
         self.colornr = 3      # red
         self.fontsize = 48.0  # 48 point
         self.img = img.convert('RGBA')
+        self.scale = scene.get_screen_scale()
         img = None
         self.picsize = picsize
 
@@ -60,14 +62,14 @@ class MyPicture(scene.Scene):
         
     def save_image(self):
         color = tuple([int(i * 255) for i in self.current_color()])  # convert scene color to PIL color
-        pic_save(self.img, int(self.picsize[0]), int(self.picsize[1]), self.text, self.current_font(), self.fontsize, color, self.position[0], self.position[1])
+        pic_save(self.img, int(self.picsize[0]), int(self.picsize[1]), self.text, self.current_font(), self.fontsize, color, self.textPosition[0], self.textPosition[1], self.scale)
         console.hud_alert('Saved')
 
     def setup(self):
         x = self.picsize[0]
         y = self.picsize[1]
-        self.position = scene.Size(x/2, y/2)
-        self.layer = scene.Layer(scene.Rect(0, 0, x, y))
+        self.textPosition = scene.Size(x/2/self.scale, y/2/self.scale)
+        self.layer = scene.Layer(scene.Rect(0, 0, x/2, y/2))
         self.layer.image = scene.load_pil_image(self.img)
         self.add_layer(self.layer)
 
@@ -79,7 +81,7 @@ class MyPicture(scene.Scene):
 
     def touch_moved(self, touch):
         if ((0 < touch.location[0] < self.bounds.w) and (0 < touch.location[1] < self.bounds.h - 20)):
-            self.position = touch.location
+            self.textPosition = touch.location
 
     def touch_ended(self, touch):
         self.touch_moved(touch)
@@ -89,7 +91,7 @@ class MyPicture(scene.Scene):
         self.root_layer.update(self.dt)
         self.root_layer.draw()
         scene.tint(*self.current_color())  # draw the user's text
-        scene.text(self.text, self.current_font(), self.fontsize, self.position[0], self.position[1], 5)
+        scene.text(self.text, self.current_font(), self.fontsize, self.textPosition[0], self.textPosition[1], 5)
             
 class PhotoTextV2(ui.View):
     def __init__(self):
@@ -100,11 +102,15 @@ class PhotoTextV2(ui.View):
         img = photos.pick_image()
         if img:
             console.hud_alert('Please wait...')
+            scale = scene.get_screen_scale()
+            #print str(scale)
             picsize = scene.Size(*img.size)
+            width = picsize[0] / scale
+            height = picsize[1] / scale
             self.sv2 = self.view['scrollview2']
-            self.sv2.content_size = (picsize[0], picsize[1])
+            self.sv2.content_size = (width, height)
             self.sv2v1 = self.sv2.subviews[0]  #sv2v1 = view1 in scrollview2
-            self.sv2v1.bounds = (0, 0, picsize[0], picsize[1])
+            self.sv2v1.bounds = (0, 0, width, height)
             self.sceneView = scene.SceneView(frame=self.sv2v1.bounds)
             self.sceneView.scene = MyPicture(self.view['scrollview1'].subviews[0].text, img, picsize)
             img = None
