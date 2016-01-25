@@ -13,4 +13,4 @@ Pythonista script to add one line of text to a photo from the camera roll.
 PhotoTextV2
 ===========
 
-Similar to the first version, but now with ui. Not finished yet. Some images can't be displayed.
+Similar to the first version, but now with ui.
