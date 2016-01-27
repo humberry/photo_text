@@ -61,15 +61,16 @@ class MyPicture(scene.Scene):
         self.colornr += 1
         
     def save_image(self):
+        w, h = [int(x) for x in self.picsize]
         color = tuple([int(i * 255) for i in self.current_color()])  # convert scene color to PIL color
-        pic_save(self.img, int(self.picsize[0]), int(self.picsize[1]), self.text, self.current_font(), self.fontsize, color, self.textPosition[0], self.textPosition[1], self.scale)
+        x, y = self.textPosition
+        pic_save(self.img, w, h, self.text, self.current_font(), self.fontsize, color, x, y, self.scale)
         console.hud_alert('Saved')
 
     def setup(self):
-        x = self.picsize[0]
-        y = self.picsize[1]
-        self.textPosition = scene.Size(x/2/self.scale, y/2/self.scale)
-        self.layer = scene.Layer(scene.Rect(0, 0, x/2, y/2))
+        w, h = self.picsize
+        self.textPosition = scene.Size(w/2/self.scale, h/2/self.scale)
+        self.layer = scene.Layer(scene.Rect(0, 0, w/2, h/2))
         self.layer.image = scene.load_pil_image(self.img)
         self.add_layer(self.layer)
 
@@ -80,7 +81,8 @@ class MyPicture(scene.Scene):
         return fonttypes[self.fontnr % len(fonttypes)]
 
     def touch_moved(self, touch):
-        if ((0 < touch.location[0] < self.bounds.w) and (0 < touch.location[1] < self.bounds.h - 20)):
+        x, y = touch.location
+        if ((0 < x < self.bounds.w) and (0 < y < self.bounds.h - 20)):
             self.textPosition = touch.location
 
     def touch_ended(self, touch):
